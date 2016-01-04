@@ -1,13 +1,12 @@
 from app.models import db, User
 from app.app import create_app
-from app.config import TestingConfig
 import os
 import unittest
 
 class BaseTestCase(unittest.TestCase):
 
     def setUp(self):
-        app = create_app(TestingConfig)
+        app = create_app('instance.config.TestingConfig')
         self.user = {'username': 'its-me', 'password': '1234'}
         self.app = app
         self.client = app.test_client

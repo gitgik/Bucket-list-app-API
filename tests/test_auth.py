@@ -1,6 +1,4 @@
-import unittest
 from test_base import BaseTestCase
-from app.config import TestingConfig
 import app.auth as auth
 import json
 
@@ -9,8 +7,6 @@ class AuthTestCase(BaseTestCase):
 
     # ENDPOINT: POST /auth/register
     def test_registration(self):
-        app = create_app(TestingConfig)
-        self.client = app.test_client
         user = {'username':'Adelle', 'password':'Hello'}
         req = self.client().get('/auth/register')
         self.assertEqual(req.status_code, 200)
@@ -18,3 +14,17 @@ class AuthTestCase(BaseTestCase):
         self.assertEqual(req.status_code, 201)
         self.assertIn('registered successfully', req.data)
 
+    # ENDPOINT: POST '/auth/login'
+    def test_logging_in(self):
+        req = self.client().post('/auth/login', data=self.user_data)
+        self.assertEqual(req.status_code, 200)
+        self.assertIn(auth.SERVICE_MESSAGES['login'], req.data)
+
+    # ENDPOINT: GET '/auth/logout'
+    def test_logging_out(self):
+        get_res = self.client().get('/auth/login', data=self.user_data)
+        get_res_json = res.get(get_res.data)
+        jwtoken = get_res_json.get('token')
+        headers = {'Authorization': 'Bearer {0}'.format(jwtoken)}
+        logout_req = self.client().get('/auth/logout', headers=headers)
+        self.assertIn(auth.SERVICE_MESSAGES['logout'], logout_req.data)
