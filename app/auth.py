@@ -1,6 +1,6 @@
 from flask import request, current_app
 from datetime import datetime, timedelta
-from exceptions.exc import UserExists
+from exceptions.handler import UserExists
 from models import db, User, Session
 import hashlib
 import jwt
@@ -59,7 +59,7 @@ def logout():
 
     return True
 
-MESSAGES = {
+SERVICE_MESSAGES = {
     'login' : 'You have logged in successfully',
     'logout': 'You have logged out successfully'
 }

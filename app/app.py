@@ -3,7 +3,7 @@ from flask import request
 from models import db, BucketList, BucketListItem
 from flask.ext.api.exceptions import \
     AuthenticationFailed, NotFound, ParseError, NotAcceptable
-from exceptions.exc import CredentialsRequired
+from exceptions.handler import CredentialsRequired
 import auth
 
 def create_app(module='config.DevelopmentConfig'):
