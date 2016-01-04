@@ -78,6 +78,7 @@ class Session(Base):
     user_id = db.Column(db.Integer)
     token = db.Column(db.String(256))
 
+
 class BucketListItem(Base):
     """ Maps to BucketList table """
     __tablename__ = 'items'
