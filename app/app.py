@@ -2,7 +2,7 @@ from flask.ext.api import FlaskAPI
 from flask import request
 from models import db, BucketList, BucketListItem
 from flask.ext.api.exceptions import \
-    AuthenticationFailed, NotFound, ParserError, NotAcceptable
+    AuthenticationFailed, NotFound, ParseError, NotAcceptable
 from exceptions.exc import CredentialsRequired
 import auth
 
