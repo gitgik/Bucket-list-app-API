@@ -1,4 +1,3 @@
-import os
 from flask.ext.api.exceptions import APIException
 
 
