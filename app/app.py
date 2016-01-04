@@ -7,9 +7,9 @@ from exceptions.handler import CredentialsRequired
 import auth
 
 
-def create_app(module='config.DevelopmentConfig'):
+def create_app(module='instance.config.DevelopmentConfig'):
     """ Wrap the routes into one exportable method """
-    app = FlaskAPI(__name__)
+    app = FlaskAPI(__name__, instance_relative_config=True)
     # Object-based configuration
     app.config.from_object(module)
     db.init_app(app)
@@ -31,4 +31,4 @@ def create_app(module='config.DevelopmentConfig'):
                 return auth.register(username, password)
             else:
                 raise ParseError()
-
+    return app
