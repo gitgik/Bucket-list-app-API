@@ -23,9 +23,12 @@ class AuthTestCase(BaseTestCase):
 
     # ENDPOINT: GET '/auth/logout'
     def test_logging_out(self):
-        get_res = self.client().get('/auth/login', data=self.user)
+        get_res = self.client().post('/auth/login', data=self.user)
         get_res_json = json.loads(get_res.data)
         jwtoken = get_res_json.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwtoken)}
         logout_req = self.client().get('/auth/logout', headers=headers)
         self.assertIn(auth.SERVICE_MESSAGES['logout'], logout_req.data)
+
+    def test_it(self):
+        pass

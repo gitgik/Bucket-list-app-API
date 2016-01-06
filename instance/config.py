@@ -41,6 +41,7 @@ class TestingConfig(BaseConfig):
     DB_FD, DATABASE = tempfile.mkstemp()
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' \
         + os.path.join(DATABASE)
+    SECRET_KEY = os.getenv('SECRET_KEY', 'secret_key')
 
 
 class ProductionConfig(BaseConfig):

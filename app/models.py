@@ -1,9 +1,9 @@
-from flask_sqlalchemy import sqlalchemy
 from flask.ext.sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import mapper
+from flask_sqlalchemy import sqlalchemy
 import hashlib
 
 db = SQLAlchemy()
+class_mapper = sqlalchemy.orm.class_mapper
 
 
 class Base(db.Model):
@@ -16,7 +16,7 @@ class Base(db.Model):
         db.DateTime,
         default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
-    
+
     def save(self):
         """ Save the object instance of the model """
         db.session.add(self)
@@ -29,23 +29,23 @@ class Base(db.Model):
 
     def to_json(self):
         """ Serializes objects to json """
-        jsonDict = dict()
+        json_dict = dict()
         result_list = []
-        for propt in mapper(self.__class__).iterate_properties:
-            if propt.key == 'user':
+        for property in class_mapper(self.__class__).iterate_properties:
+            if property.key == 'user':
                 continue
-            if propt.key == 'items':
-                items = getattr(self, propt.key)
+            if property.key == 'items':
+                items = getattr(self, property.key)
                 for item in items:
                     if callable(getattr(item, 'to_json')):
                         result = item.to_json()
                         result_list.append(result)
-                        jsonDict[propt.key] = result_list
+                        json_dict[property.key] = result_list
                         continue
 
-            jsonDict[propt.key] = getattr(self, propt.key)
+            json_dict[property.key] = getattr(self, property.key)
 
-        return jsonDict
+        return json_dict
 
 
 class User(Base):
@@ -56,20 +56,36 @@ class User(Base):
     bucketlists = db.relationship(
         'BucketList', order_by='BucketList.id')
 
+    def __init__(self, username, password):
+        self.username = username
+        self.password = hashlib.sha512(password).hexdigest()
+
+    def password_is_valid(self, password):
+        """ Validate user password """
+        return self.password == hashlib.sha512(password).hexdigest()
+
 
 class BucketList(Base):
     """ Maps to the bucketlists table """
     __tablename__ = 'bucketlists'
-    name       = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(256), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey(User.id))
-    
+
     user = db.relationship('User')
     items = db.relationship('BucketListItem')
 
-    def __init__(self, creator, name):
+    def __init__(self, created_by, name):
         """ Initialize with the creator and name of bucketlist """
-        self.created_by = creator
+        self.created_by = created_by
         self.name = name
+
+    @staticmethod
+    def for_logged_user(user_id):
+        """ Returns logged in user bucketlist data """
+        results = db.session.query.filter_by(created_by=user_id).all()
+        if not results:
+            return 'Your BucketList is empty'
+        return results
 
 
 class Session(Base):

@@ -31,4 +31,56 @@ def create_app(module='instance.config.DevelopmentConfig'):
                 return auth.register(username, password)
             else:
                 raise ParseError()
+
+    @app.route('/auth/login', methods=['GET', 'POST'])
+    def login():
+        """ login using a POST request, else prompt for credentials """
+        if request.method == 'GET':
+            raise CredentialsRequired()
+
+        # handle POST login
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if auth.check_auth(username, password):
+            return {
+                'message': [
+                    auth.SERVICE_MESSAGES['login'],
+                    {
+                        'available endpoint':
+                        app.config.get('AVAILABLE_ENDPOINTS')
+                    }
+                ],
+                'token': auth.generate_token(username, password)
+            }
+        else:
+            raise AuthenticationFailed()
+
+    @app.route('/auth/logout', methods=['GET'])
+    def logout():
+        """" Logs out a user """
+        if auth.logout():
+            return {'message': auth.SERVICE_MESSAGES['logout']}
+        else:
+            raise NotFound()
+
+    @app.route('/bucketlists', methods=['POST', 'GET'])
+    def bucketlist():
+        """ Return a JSON response with all bucketlists """
+        user_id = auth.get_current_user()
+        data_results = None
+        if request.method == 'GET':
+            results = BucketList.query.filter_by(created_by=user_id)
+            # pagination limit
+            limit = request.args.get('limit', 20)
+            q = request.args.get('q')
+            page = request.args.get('page', 1)
+
+            if results.all():
+                if not 0 <= int(limit) <= 100:
+                    raise NotAcceptable('Maximum limit per page is 100')
+                else:
+                    data_results = results
+                if q:
+                    data_results = results.filter(
+                        BucketList.name.ilike('%{0}%'.format(q)))
     return app
