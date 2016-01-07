@@ -99,8 +99,15 @@ class TestBucketListItem(BaseTestCase):
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
             '/bucketlists',
-            data={'name': faker.catch_phrase()},
+            data={'name': 'Make a drone'},
             headers=headers)
+        self.assertEqual(rv.status_code, 201)
+
+        for i in range(0, 200):
+            self.client().post(
+                '/bucketlists',
+                data={'name': faker.bs()},
+                headers=headers)
         rv = self.client().get('/bucketlists?limit=20', headers=headers)
         rv_data = json.loads(rv.data)
         rv_length = len(rv_data['message'])
@@ -109,5 +116,3 @@ class TestBucketListItem(BaseTestCase):
         rv = self.client().get('/bucketlists?limit=1000', headers=headers)
         # Not acceptable in the service
         self.assertEqual(rv.status_code, 406)
-
-
