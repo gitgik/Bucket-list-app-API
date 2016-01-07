@@ -36,6 +36,7 @@ class Base(db.Model):
                 continue
             if property.key == 'items':
                 items = getattr(self, property.key)
+                # serialize objects to json format
                 for item in items:
                     if callable(getattr(item, 'to_json')):
                         result = item.to_json()

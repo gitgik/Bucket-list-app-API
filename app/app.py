@@ -83,6 +83,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
                 if q:
                     results_data = results.filter(
                         BucketList.name.ilike('%{0}%'.format(q)))
+                # serialize result objects to json
                 result_list = []
                 for item in results_data.paginate(
                         page, int(limit), False).items:
@@ -101,4 +102,22 @@ def create_app(module='instance.config.DevelopmentConfig'):
             return {
                 "message": "Bucketlist was created successfully",
                 "bucketlist": bucketlist.to_json()}, 201
+
+    @app.route('/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    def edit_bucketlist(id, **kwargs):
+        """ Edit a bucketlist:
+            DELETE a bucketlist with its child items,
+            UPDATE a bucketlist with its child items
+        """
+        bucketlist = BucketList.query.get(id)
+        if request.method == 'DELETE':
+            bucketlist.delete()
+            return {"message": "Bucketlist was deleted successfully"}, 200
+
+        elif request.method == 'PUT':
+            name = request.form.get("name")
+            bucketlist.name = name
+            bucketlist.save()
+
+        return bucketlist.to_json(), 200
     return app
