@@ -56,8 +56,6 @@ def owned_by_bucketlist(f):
         bucketlist_id = kwargs.get('id')
         bucketlistitem_id = kwargs.get('item_id')
         bucketlist_item = BucketListItem.query.get(int(bucketlistitem_id))
-        print '*************************************'
-        print bucketlist_item
         db.session.remove()
         if bucketlist_item:
             try:
