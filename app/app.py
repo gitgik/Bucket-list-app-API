@@ -143,6 +143,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
                methods=['GET', 'PUT', 'DELETE'])
     @ownership.auth_required
     @ownership.owned_by_user
+    @ownership.owned_by_bucketlist
     def bucketlist_item_operations(id, item_id, **kwargs):
         """ GET: retrieves bucketlist item
             PUT: updates bucketlist item
@@ -153,7 +154,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
             name = request.form.get('name')
             done = request.form.get('done')
             bucketlist_item.id = item_id
-            bucketlist_item.extend(
+            bucketlist_item.update(
                 bucketlist_id=id, name=name, done=done
             )
         elif request.method == 'DELETE':

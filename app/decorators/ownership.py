@@ -47,3 +47,23 @@ def auth_required(f):
             raise ValidationError()
         return f(*args, **kwargs)
     return decorated
+
+
+def owned_by_bucketlist(f):
+    """ Force an item to be owned by a BucketList """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        bucketlist_id = kwargs.get('id')
+        bucketlistitem_id = kwargs.get('item_id')
+        bucketlist_item = BucketListItem.query.get(int(bucketlistitem_id))
+        print '*************************************'
+        print bucketlist_item
+        db.session.remove()
+        if bucketlist_item:
+            try:
+                assert bucketlist_item.bucketlist_id == int(bucketlist_id)
+            except:
+                raise NotFound()
+        kwargs['item'] = bucketlist_item
+        return f(*args, **kwargs)
+    return decorated

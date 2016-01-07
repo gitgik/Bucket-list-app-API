@@ -23,6 +23,7 @@ class TestBucketListItem(BaseTestCase):
             headers=headers)
         self.assertEqual(rv.status_code, 201)
 
+    # ENDPOINT: GET '/bucketlists/<id>/items/<item_id>'
     def test_user_can_retrieve_bucketlist_items(self):
         """Tests users can retrieve a bucketlist item by id """
         res = self.client().post('/auth/login', data=self.user)
@@ -33,9 +34,13 @@ class TestBucketListItem(BaseTestCase):
             '/bucketlists',
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertEqual(rv.status_code, 201)
-        rv = self.client().get(
+        rv = self.client().post(
             '/bucketlists/1/items',
             data={"name": "Go to Osteria Francescana and dine lavishly"},
+            headers=headers)
+        self.assertEqual(rv.status_code, 201)
+        rv = self.client().get(
+            '/bucketlists/1/items/1',
             headers=headers)
         self.assertEqual(rv.status_code, 200)
 
@@ -48,9 +53,9 @@ class TestBucketListItem(BaseTestCase):
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
             '/bucketlists',
-            data={'name': 'Eat pray and love'}, headers=headers)
+            data={"name": "Eat pray and love"}, headers=headers)
         self.assertEqual(rv.status_code, 201)
-        rv = self.client().get(
+        rv = self.client().post(
             '/bucketlists/1/items',
             data={"name": "Go to Osteria Francescana and dine lavishly"},
             headers=headers)
@@ -84,3 +89,7 @@ class TestBucketListItem(BaseTestCase):
         results_data = json.loads(rv.data)
         results_length = len(results_data['message'])
         self.assertEqual(results_length, 2)
+
+    # ENDPOINT: GET /bucketlist?limit=20
+    def test_pagination_limit_and_range(self):
+        pass

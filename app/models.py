@@ -84,9 +84,7 @@ class BucketList(Base):
     def for_logged_user(user_id):
         """ Returns logged in user bucketlist data """
         results = db.session.query.filter_by(created_by=user_id).all()
-        if not results:
-            return 'Your BucketList is empty'
-        return results
+        return results or 'Your BucketList is empty'
 
 
 class Session(Base):
