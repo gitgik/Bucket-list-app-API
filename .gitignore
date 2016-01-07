@@ -1,2 +1,4 @@
 ///#Byte-compiled files
 *.pyc
+///#Coverage output files
+*.coverage

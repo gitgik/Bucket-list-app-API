@@ -1,12 +1,13 @@
 from test_base import BaseTestCase
 import app.auth as auth
 import json
+import unittest
 
 
 class AuthTestCase(BaseTestCase):
     """ Tests correct user authentication """
 
-    # ENDPOINT: POST /auth/register
+    # ENDPOINT: POST '/auth/register'
     def test_registration(self):
         user = {'username': 'Adelle', 'password': 'Hello'}
         req = self.client().get('/auth/register')
@@ -30,5 +31,5 @@ class AuthTestCase(BaseTestCase):
         logout_req = self.client().get('/auth/logout', headers=headers)
         self.assertIn(auth.SERVICE_MESSAGES['logout'], logout_req.data)
 
-    def test_it(self):
-        pass
+if __name__ == '__main__':
+    unittest.main()

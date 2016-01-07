@@ -120,4 +120,8 @@ def create_app(module='instance.config.DevelopmentConfig'):
             bucketlist.save()
 
         return bucketlist.to_json(), 200
+
+    @app.route('/bucketlists/<int:id>/items', methods=['POST'])
+    def create_bucketlist_item(id, **kwargs):
+        pass
     return app
