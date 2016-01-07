@@ -92,4 +92,22 @@ class TestBucketListItem(BaseTestCase):
 
     # ENDPOINT: GET /bucketlist?limit=20
     def test_pagination_limit_and_range(self):
-        pass
+        faker = Faker()
+        res = self.client().post('/auth/login', data=self.user)
+        res_data = json.loads(res.data)
+        jwt_token = res_data.get('token')
+        headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
+        rv = self.client().post(
+            '/bucketlists',
+            data={'name': faker.catch_phrase()},
+            headers=headers)
+        rv = self.client().get('/bucketlists?limit=20', headers=headers)
+        rv_data = json.loads(rv.data)
+        rv_length = len(rv_data['message'])
+        # Return 20 bucketlist items
+        self.assertEqual(rv_length, 20)
+        rv = self.client().get('/bucketlists?limit=1000', headers=headers)
+        # Not acceptable in the service
+        self.assertEqual(rv.status_code, 406)
+
+
