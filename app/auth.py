@@ -38,7 +38,6 @@ def generate_token(username, password):
     user_results = User.query.filter_by(**user).first()
     user['exp'] = datetime.utcnow() + timedelta(minutes=60)
     secret_key = current_app.config.get('SECRET_KEY')
-    print secret_key, '*'*30
     jwt_string = jwt.encode(user, secret_key)
     session = Session(user_id=user_results.id, token=jwt_string)
     session.save()

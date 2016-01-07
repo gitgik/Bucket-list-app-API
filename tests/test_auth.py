@@ -1,7 +1,6 @@
 from test_base import BaseTestCase
 import app.auth as auth
 import json
-import unittest
 
 
 class AuthTestCase(BaseTestCase):
@@ -30,6 +29,3 @@ class AuthTestCase(BaseTestCase):
         headers = {'Authorization': 'Bearer {0}'.format(jwtoken)}
         logout_req = self.client().get('/auth/logout', headers=headers)
         self.assertIn(auth.SERVICE_MESSAGES['logout'], logout_req.data)
-
-if __name__ == '__main__':
-    unittest.main()
