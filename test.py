@@ -2,7 +2,7 @@ from tests import test_auth, test_bucketlist, test_bucketlist_items
 import unittest
 
 suite = unittest.TestLoader().loadTestsFromTestCase(
-    test_auth.AuthTestCase)
+    test_auth.AuthenticationTestCase)
 suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
     test_bucketlist.BucketListTestCase))
 suite.addTests(unittest.TestLoader().loadTestsFromTestCase(

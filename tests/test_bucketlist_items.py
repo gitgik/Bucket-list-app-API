@@ -3,7 +3,7 @@ from faker import Faker
 import json
 
 
-class TestBucketListItem(BaseTestCase):
+class TestBucketListItemTestCase(BaseTestCase):
     """Tests an actionable bucketlist and all items operations in it """
 
     # ENDPOINT: POST /bucketlists/<id>/items

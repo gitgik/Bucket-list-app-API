@@ -3,7 +3,7 @@ import app.auth as auth
 import json
 
 
-class AuthTestCase(BaseTestCase):
+class AuthenticationTestCase(BaseTestCase):
     """ Tests correct user authentication """
 
     # ENDPOINT: POST '/auth/register'
