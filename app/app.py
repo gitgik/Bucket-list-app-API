@@ -134,4 +134,24 @@ def create_app(module='instance.config.DevelopmentConfig'):
             "message": "Bucketlist item was successfully created",
             "bucketlistsitem": bucketlist_item.to_json()
         }, 201
+
+    @app.route('/bucketlists/<int:id>/items/<int:item_id>',
+               methods=['GET', 'POST', 'DELETE'])
+    def bucketlist_item_operations(id, item_id, **kwargs):
+        """ GET: retrieves bucketlist item
+            PUT: updates bucketlist item
+            DELETE: deletes a bucketlist item
+        """
+        bucketlist_item = kwargs.get('bucketlistsitem')
+        if request.method == 'PUT':
+            name = request.form.get('name')
+            done = request.form.get('done')
+            bucketlist_item.id = item_id
+            bucketlist_item.extend(
+                bucketlist_id=id, name=name, done=done
+            )
+        elif request.method == 'DELETE':
+            bucketlist_item.delete()
+            return {"message": "Bucketlist item was successfully deleted"}
+        return bucketlist_item.json(), 200
     return app
