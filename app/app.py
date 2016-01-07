@@ -67,7 +67,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
     def bucketlist():
         """ Return a JSON response with all bucketlists """
         user_id = auth.get_current_user()
-        data_results = None
+        results_data = None
         if request.method == 'GET':
             results = BucketList.query.filter_by(created_by=user_id)
             # pagination limit
@@ -79,8 +79,26 @@ def create_app(module='instance.config.DevelopmentConfig'):
                 if not 0 <= int(limit) <= 100:
                     raise NotAcceptable('Maximum limit per page is 100')
                 else:
-                    data_results = results
+                    results_data = results
                 if q:
-                    data_results = results.filter(
+                    results_data = results.filter(
                         BucketList.name.ilike('%{0}%'.format(q)))
+                result_list = []
+                for item in results_data.paginate(
+                        page, int(limit), False).items:
+                    if callable(getattr(item, 'to_json')):
+                        result = item.to_json()
+                        result_list.append(result)
+                results_data = result_list
+                return {'message': results_data}
+
+            raise NotFound('User has no bucketlist')
+
+        else:
+            name = request.form.get("name")
+            bucketlist = BucketList(created_by=user_id, name=name)
+            bucketlist.save()
+            return {
+                "message": "Bucketlist was created successfully",
+                "bucketlist": bucketlist.to_json()}, 201
     return app

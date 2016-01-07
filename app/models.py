@@ -40,8 +40,8 @@ class Base(db.Model):
                     if callable(getattr(item, 'to_json')):
                         result = item.to_json()
                         result_list.append(result)
-                        json_dict[property.key] = result_list
-                        continue
+                json_dict[property.key] = result_list
+                continue
 
             json_dict[property.key] = getattr(self, property.key)
 
