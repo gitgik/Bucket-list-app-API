@@ -5,6 +5,7 @@ from flask.ext.api.exceptions import \
     AuthenticationFailed, NotFound, ParseError, NotAcceptable
 from exceptions.handler import CredentialsRequired
 import auth
+import decorators.ownership as ownership
 
 
 def create_app(module='instance.config.DevelopmentConfig'):
@@ -64,6 +65,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
             raise NotFound()
 
     @app.route('/bucketlists', methods=['POST', 'GET'])
+    @ownership.auth_required
     def bucketlist():
         """ Return a JSON response with all bucketlists """
         user_id = auth.get_current_user()
@@ -122,6 +124,8 @@ def create_app(module='instance.config.DevelopmentConfig'):
         return bucketlist.to_json(), 200
 
     @app.route('/bucketlists/<int:id>/items', methods=['POST'])
+    @ownership.auth_required
+    @ownership.owned_by_user
     def create_bucketlist_item(id, **kwargs):
         """ Creates a new item under a given bucketlist """
         name = request.form.get('name')
@@ -136,13 +140,15 @@ def create_app(module='instance.config.DevelopmentConfig'):
         }, 201
 
     @app.route('/bucketlists/<int:id>/items/<int:item_id>',
-               methods=['GET', 'POST', 'DELETE'])
+               methods=['GET', 'PUT', 'DELETE'])
+    @ownership.auth_required
+    @ownership.owned_by_user
     def bucketlist_item_operations(id, item_id, **kwargs):
         """ GET: retrieves bucketlist item
             PUT: updates bucketlist item
             DELETE: deletes a bucketlist item
         """
-        bucketlist_item = kwargs.get('bucketlistsitem')
+        bucketlist_item = kwargs.get('item')
         if request.method == 'PUT':
             name = request.form.get('name')
             done = request.form.get('done')
@@ -153,5 +159,5 @@ def create_app(module='instance.config.DevelopmentConfig'):
         elif request.method == 'DELETE':
             bucketlist_item.delete()
             return {"message": "Bucketlist item was successfully deleted"}
-        return bucketlist_item.json(), 200
+        return bucketlist_item.to_json(), 200
     return app
