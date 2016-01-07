@@ -39,8 +39,9 @@ class TestBucketListItem(BaseTestCase):
             headers=headers)
         self.assertEqual(rv.status_code, 200)
 
+    # ENDPOINT: DELETE: '/bucketlists/<id>/items/<item_id>'
     def tests_user_can_delete_bucketlist_item(self):
-        """Tests users can retrieve a bucketlist item by id """
+        """Tests users can delete a bucketlist item by id """
         res = self.client().post('/auth/login', data=self.user)
         res_data = json.loads(res.data)
         jwt_token = res_data.get('token')
@@ -58,3 +59,28 @@ class TestBucketListItem(BaseTestCase):
             '/bucketlists/1/items/1',
             headers=headers)
         self.assertEqual(rv.status_code, 200)
+
+    def test_user_can_search_bucketlists(self):
+        """Tests users can search for an existing bucketlist """
+        res = self.client().post('/auth/login', data=self.user)
+        res_data = json.loads(res.data)
+        jwt_token = res_data.get('token')
+        headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
+
+        names = [
+            "Become a pythonista",
+            "Go out for a party",
+            "Make a drone",
+            "Make a comeback",
+        ]
+        for name in names:
+            self.client().post(
+                '/bucketlists',
+                data={"name": name},
+                headers=headers)
+        # search for a bucketlist starting with "Make"
+        rv = self.client().get('/bucketlists?q=Make', headers=headers)
+        self.assertEqual(rv.status_code, 200)
+        results_data = json.loads(rv.data)
+        results_length = len(results_data['message'])
+        self.assertEqual(results_length, 2)
