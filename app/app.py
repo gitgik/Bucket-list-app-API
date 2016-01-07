@@ -123,5 +123,15 @@ def create_app(module='instance.config.DevelopmentConfig'):
 
     @app.route('/bucketlists/<int:id>/items', methods=['POST'])
     def create_bucketlist_item(id, **kwargs):
-        pass
+        """ Creates a new item under a given bucketlist """
+        name = request.form.get('name')
+        done = request.form.get('done')
+        bucketlist_item = BucketListItem(
+            bucketlist_id=id, name=name, done=done
+        )
+        bucketlist_item.save()
+        return {
+            "message": "Bucketlist item was successfully created",
+            "bucketlistsitem": bucketlist_item.to_json()
+        }, 201
     return app
