@@ -1,5 +1,5 @@
-# Bucket-list-app-API
-[![Build Status](https://travis-ci.org/andela-ggikera/Bucket-list-app-API.svg?branch=master)](https://travis-ci.org/andela-ggikera/Bucket-list-app-API)
+# Bucket-list-app-API  [![Build Status](https://travis-ci.org/andela-ggikera/Bucket-list-app-API.svg?branch=master)](https://travis-ci.org/andela-ggikera/Bucket-list-app-API)
+[![Coverage Status](https://coveralls.io/repos/andela-ggikera/Bucket-list-app-API/badge.svg?branch=master&service=github)](https://coveralls.io/github/andela-ggikera/Bucket-list-app-API?branch=master)
 A feature-rich Flask API for a bucket list service with token based authentication, pagination and search capabilities.
 --------------------------------------------------
 This is a bucketlist service API built on Flask.
