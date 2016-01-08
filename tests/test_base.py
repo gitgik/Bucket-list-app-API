@@ -8,8 +8,8 @@ currentdir = os.path.dirname(os.path.abspath(
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 
-from bucket.models import db, User
 from bucket.app import create_app
+from bucket.models import db, User
 
 
 class BaseTestCase(unittest.TestCase):
