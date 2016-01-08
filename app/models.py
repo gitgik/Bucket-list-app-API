@@ -50,7 +50,7 @@ class Base(db.Model):
 
 
 class User(Base):
-    """ Maps to users table """
+    """Maps to users table """
     __tablename__ = 'users'
     username = db.Column(db.String(256), unique=True)
     password = db.Column(db.String(256))
@@ -62,12 +62,12 @@ class User(Base):
         self.password = hashlib.sha512(password).hexdigest()
 
     def password_is_valid(self, password):
-        """ Validate user password """
+        """Validates user password """
         return self.password == hashlib.sha512(password).hexdigest()
 
 
 class BucketList(Base):
-    """ Maps to the bucketlists table """
+    """Maps to the bucketlists table """
     __tablename__ = 'bucketlists'
     name = db.Column(db.String(256), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey(User.id))
@@ -81,14 +81,13 @@ class BucketList(Base):
         self.name = name
 
     @staticmethod
-    def for_logged_user(user_id):
-        """ Returns logged in user bucketlist data """
-        results = db.session.query.filter_by(created_by=user_id).all()
-        return results or 'Your BucketList is empty'
+    def get_all(user_id):
+        """Returns logged in user bucketlist data """
+        return BucketList.query.filter_by(created_by=user_id)
 
 
 class Session(Base):
-    """ Maps to session table """
+    """Maps to session table """
     __tablename__ = 'sessions'
     user_id = db.Column(db.Integer)
     token = db.Column(db.String(256))
@@ -102,13 +101,13 @@ class BucketListItem(Base):
     bucketlist_id = db.Column(db.Integer, db.ForeignKey(BucketList.id))
 
     def __init__(self, bucketlist_id, name, done=False):
-        """ Initialize model with id,name,done defaulting to False """
+        """Initializes model with id,name,done defaulting to False """
         self.name = name
         self.done = done
         self.bucketlist_id = bucketlist_id
 
     def update(self, **kwargs):
-        """ Updates the object instance of the model """
+        """Updates the object instance of the model """
         self.name = kwargs.get('name')
         self.done = kwargs.get('done', False)
         db.session.commit()

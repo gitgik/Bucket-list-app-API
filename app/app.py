@@ -47,7 +47,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
                 'message': [
                     auth.SERVICE_MESSAGES['login'],
                     {
-                        'available endpoint':
+                        'available endpoints':
                         app.config.get('AVAILABLE_ENDPOINTS')
                     }
                 ],
@@ -71,7 +71,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
         user_id = auth.get_current_user()
         results_data = None
         if request.method == 'GET':
-            results = BucketList.query.filter_by(created_by=user_id)
+            results = BucketList.get_all(user_id)
             # pagination limit
             limit = request.args.get('limit', 20)
             q = request.args.get('q')
@@ -154,9 +154,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
             name = request.form.get('name')
             done = request.form.get('done')
             bucketlist_item.id = item_id
-            bucketlist_item.update(
-                bucketlist_id=id, name=name, done=done
-            )
+            bucketlist_item.update(bucketlist_id=id, name=name, done=done)
         elif request.method == 'DELETE':
             bucketlist_item.delete()
             return {"message": "Bucketlist item was successfully deleted"}

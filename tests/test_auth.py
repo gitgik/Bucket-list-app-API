@@ -15,6 +15,9 @@ class AuthenticationTestCase(BaseTestCase):
         req = self.client().post('/auth/register', data=user)
         self.assertEqual(req.status_code, 201)
         self.assertIn('registered successfully', req.data)
+        # test for empty registration: respond with bad request
+        rv = self.client().post('/auth/register')
+        self.assertEqual(rv.status_code, 400)
 
     def test_user_already_exists(self):
         """Tests for the already existing user """
@@ -33,6 +36,13 @@ class AuthenticationTestCase(BaseTestCase):
         req = self.client().post('/auth/login', data=self.user)
         self.assertEqual(req.status_code, 200)
         self.assertIn(auth.SERVICE_MESSAGES['login'], req.data)
+        rv = self.client().get('/auth/login')
+        self.assertEqual(rv.status_code, 202)
+        # test for invalid credentials: respond with unauthorized
+        wrong_req = self.client().post(
+            '/auth/login',
+            data={'username': 'its-me', 'password': 'i have no idea'})
+        self.assertEqual(wrong_req.status_code, 401)
 
     # ENDPOINT: GET '/auth/logout'
     def test_logging_out(self):

@@ -47,6 +47,7 @@ class BucketListTestCase(BaseTestCase):
         rv = self.client().post(
             '/bucketlists',
             data={'name': 'Eat pray and love'}, headers=headers)
+        self.assertIn("bucketlist", rv.data)
         self.assertEqual(rv.status_code, 201)
         # logout the user after testing
         self.client().get('/auth/logout', headers=headers)

@@ -41,7 +41,6 @@ def generate_token(username, password):
     jwt_string = jwt.encode(user, secret_key)
     session = Session(user_id=user_results.id, token=jwt_string)
     session.save()
-
     return jwt_string
 
 
@@ -50,7 +49,6 @@ def get_current_user():
     token = request.headers.get('Authorization')
     session = Session.query.filter_by(token=token[7:]).first()
     db.session.remove()
-
     return session.user_id
 
 
@@ -60,7 +58,6 @@ def logout():
     session = Session.query.filter_by(token=token[7:]).first()
     Session.query.filter(Session.user_id == session.user_id).delete()
     db.session.remove()
-
     return True
 
 SERVICE_MESSAGES = {

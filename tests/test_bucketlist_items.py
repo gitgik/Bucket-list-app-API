@@ -44,6 +44,31 @@ class BucketListItemTestCase(BaseTestCase):
             headers=headers)
         self.assertEqual(rv.status_code, 200)
 
+    # ENDPOINT: PUT /bucketlists/<int:id>/items/<int:item_id>
+    def test_users_can_update_bucketlist_item(self):
+        """Tests users can delete a bucketlist item by id """
+        res = self.client().post('/auth/login', data=self.user)
+        res_data = json.loads(res.data)
+        jwt_token = res_data.get('token')
+        headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
+        rv = self.client().post(
+            '/bucketlists',
+            data={"name": "Eat pray and love"}, headers=headers)
+        self.assertEqual(rv.status_code, 201)
+        rv = self.client().post(
+            '/bucketlists/1/items',
+            data={"name": "Go to Osteria Francescana and dine lavishly"},
+            headers=headers)
+        self.assertEqual(rv.status_code, 201)
+        rv = self.client().put(
+            '/bucketlists/1/items/1',
+            data={
+                "name": "Go to Osteria Francescana and dine lavishly",
+                "done": True
+            },
+            headers=headers)
+        self.assertEqual(rv.status_code, 200)
+
     # ENDPOINT: DELETE: '/bucketlists/<id>/items/<item_id>'
     def tests_user_can_delete_bucketlist_item(self):
         """Tests users can delete a bucketlist item by id """
