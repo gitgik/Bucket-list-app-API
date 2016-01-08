@@ -1,6 +1,6 @@
 from flask import request, current_app
 from datetime import datetime, timedelta
-from exceptions.handler import UserExists
+from exceptions.handler import UserAlreadyExists
 from models import db, User, Session
 import hashlib
 import jwt
@@ -12,7 +12,7 @@ def register(username, password):
     db.session.remove()
 
     if user is not None:
-        raise UserExists()
+        raise UserAlreadyExists()
     else:
         user = User(username=username, password=password)
         user.save()
