@@ -1,5 +1,5 @@
 import sys
-from bucket.app import create_app
+from app.app import create_app
 
 environments = {
     'test': 'instance.config.TestingConfig',

@@ -1,5 +1,5 @@
 from test_base import BaseTestCase
-import bucket.auth as auth
+import app.auth as auth
 import json
 
 

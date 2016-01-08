@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from flask.ext.script import Manager
-from bucket.app import create_app
-from bucket.models import db, User
+from app.models import db, User
+from app.app import create_app
+
 
 manager = Manager(create_app)
 
