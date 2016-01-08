@@ -1,5 +1,5 @@
-from app.models import db, User
-from app.app import create_app
+from bucket.models import db, User
+from bucket.app import create_app
 import os
 import unittest
 
