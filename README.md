@@ -42,7 +42,8 @@ python manager.py createdb -t
 ```
 
 ###Start The Server
-Run the following command to start the server and begin listening for requests to each endpoints.
+Run the following command to start the server which listens at port 5000 for
+requests to the endpoints
 ```
 python run.py production
 ```
