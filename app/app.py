@@ -9,22 +9,25 @@ import decorators.ownership as ownership
 
 
 def create_app(module='instance.config.DevelopmentConfig'):
-    """ Wrap the routes into one exportable method """
+    """Wrap the routes into one exportable method """
     app = FlaskAPI(__name__, instance_relative_config=True)
     # Object-based configuration
     app.config.from_object(module)
+    # Iinitialize the app Api with set configs
     db.init_app(app)
 
     # routes go here
     @app.route('/auth/register', methods=['GET', 'POST'])
     def register():
-        """ return JSON response """
+        """Handle user registration, ensuring only a POST request registers"""
         if request.method == 'GET':
             return {
                 'message': 'Welcome to the BucketList service',
-                'more': 'Please make a POST /register with username and password'
+                'more': 'Please make a POST /auth/register with\
+                 username and password'
             }, 200
         else:
+            # import pdb; pdb.set_trace()
             username = request.form.get('username')
             password = request.form.get('password')
             if username and password:
@@ -34,7 +37,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
 
     @app.route('/auth/login', methods=['GET', 'POST'])
     def login():
-        """ login using a POST request, else prompt for credentials """
+        """Login using a POST request, else prompt for credentials """
         if request.method == 'GET':
             raise CredentialsRequired()
 

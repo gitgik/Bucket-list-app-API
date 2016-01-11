@@ -11,7 +11,7 @@ try:
     if sys.argv[1] in environments.keys():
         app = create_app(environments.get(sys.argv[1]))
         # Run the app
-        app.run(debug=app.config.get('TESTING'))
+        app.run()
     else:
         if sys.argv[1] == '-h' or sys.argv[1] == '--help':
             print ('Usage: python run.py <environment>')

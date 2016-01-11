@@ -10,7 +10,7 @@ def register(username, password):
     """ Registers a user """
     user = User.query.filter_by(username=username).first()
     db.session.remove()
-
+    # Checks whether a user is already registered
     if user is not None:
         raise UserAlreadyExists()
     else:
@@ -18,7 +18,8 @@ def register(username, password):
         user.save()
         return {
             "message": "You registered successfully",
-            "more": "To access your bucketlist, please log in"
+            "more": "To access your bucketlist, please log in by doing a \
+            POST /auth/login"
         }, 201
 
 

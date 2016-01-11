@@ -8,7 +8,7 @@ class BaseConfig(object):
     """
     DEBUG = False
     TESTING = False
-    DATABASE_URL = 'sqlite://:memory'
+    DATABASE_URL = 'sqlite://:memory:'
     AVAILABLE_ENDPOINTS = [
         ("POST /auth/login/", {"PUBLIC_ACCESS": True}),
         ("GET /auth/logout/", {"PUBLIC_ACCESS": False}),
@@ -25,28 +25,25 @@ class BaseConfig(object):
 
 class DevelopmentConfig(BaseConfig):
     """ Sets config for development """
-    DEBUG = True
-    TESTING = False
-    BASEDIR = os.path.abspath(os.path.dirname(__file__))
-
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' \
-        + os.path.join(BASEDIR, 'bucketlist.sqlite')
+        + os.path.join(BASE_DIR, 'bucketlist.sqlite')
     SECRET_KEY = 'secret'
 
 
 class TestingConfig(BaseConfig):
     """ Sets config for testing """
-    DEBUG = False
     TESTING = True
     DB_FD, DATABASE = tempfile.mkstemp()
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' \
         + os.path.join(DATABASE)
-    SECRET_KEY = os.getenv('SECRET_KEY', 'secret_key')
+    SECRET_KEY = 'secret'
 
 
 class ProductionConfig(BaseConfig):
     """ Sets config for production """
     TESTING = False
-    DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' \
+        + os.path.join(BASE_DIR, 'bucketlist.sqlite')
     SECRET_KEY = os.getenv('SECRET_KEY')

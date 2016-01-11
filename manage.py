@@ -8,7 +8,7 @@ manager = Manager(create_app)
 
 
 @manager.command
-def createdb(testdata=False):
+def createdb(testdata=True):
     """Initializes the database """
     app = create_app()
     with app.app_context():
