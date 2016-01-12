@@ -27,6 +27,7 @@ class BaseConfig(object):
             'secret': ''
         }
     }
+    SECRET_KEY = 'secret'
 
 
 class DevelopmentConfig(BaseConfig):

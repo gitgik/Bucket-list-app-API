@@ -3,7 +3,7 @@ from flask import request
 from models import db, BucketList, BucketListItem
 from flask.ext.api.exceptions import \
     AuthenticationFailed, NotFound, ParseError, NotAcceptable
-from exceptions.handler import CredentialsRequired
+from exceptions.handler import CredentialsRequired, NullReferenceException
 import auth
 import decorators.ownership as ownership
 
@@ -17,7 +17,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
     db.init_app(app)
 
     # routes go here
-    @app.route('/auth/register', methods=['GET', 'POST'])
+    @app.route('/auth/register/', methods=['GET', 'POST'])
     def register():
         """Handle user registration, ensuring only a POST request registers"""
         if request.method == 'GET':
@@ -35,7 +35,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
             else:
                 raise ParseError()
 
-    @app.route('/auth/login', methods=['GET', 'POST'])
+    @app.route('/auth/login/', methods=['GET', 'POST'])
     def login():
         """Login using a POST request, else prompt for credentials """
         if request.method == 'GET':
@@ -58,7 +58,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
         else:
             raise AuthenticationFailed()
 
-    @app.route('/auth/logout', methods=['GET'])
+    @app.route('/auth/logout/', methods=['GET'])
     def logout():
         """" Logs out a user """
         if auth.logout():
@@ -107,7 +107,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
                 "message": "Bucketlist was created successfully",
                 "bucketlist": bucketlist.to_json()}, 201
 
-    @app.route('/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/bucketlists/<int:id>/', methods=['GET', 'PUT', 'DELETE'])
     def edit_bucketlist(id, **kwargs):
         """ Edit a bucketlist:
             DELETE a bucketlist with its child items,
@@ -125,23 +125,28 @@ def create_app(module='instance.config.DevelopmentConfig'):
 
         return bucketlist.to_json(), 200
 
-    @app.route('/bucketlists/<int:id>/items', methods=['POST'])
+    @app.route('/bucketlists/<int:id>/items/', methods=['POST', 'GET'])
     @ownership.auth_required
     @ownership.owned_by_user
     def create_bucketlist_item(id, **kwargs):
         """ Creates a new item under a given bucketlist """
-        name = request.form.get('name')
-        done = request.form.get('done')
-        bucketlist_item = BucketListItem(
-            bucketlist_id=id, name=name, done=done
-        )
-        bucketlist_item.save()
-        return {
-            "message": "Bucketlist item was successfully created",
-            "bucketlistsitem": bucketlist_item.to_json()
-        }, 201
+        if request.method == 'POST':
+            name = request.form.get('name')
+            done = request.form.get('done')
+            bucketlist_item = BucketListItem(
+                bucketlist_id=id, name=name, done=done
+            )
+            bucketlist_item.save()
+            return {
+                "message": "Bucketlist item was successfully created",
+                "bucketlistsitem": bucketlist_item.to_json()
+            }, 201
+        else:
+            # Get the bucketlist items instead of a 500 internal server error
+            bucketlist = BucketList.query.get(id)
+            return bucketlist.to_json(), 200
 
-    @app.route('/bucketlists/<int:id>/items/<int:item_id>',
+    @app.route('/bucketlists/<int:id>/items/<int:item_id>/',
                methods=['GET', 'PUT', 'DELETE'])
     @ownership.auth_required
     @ownership.owned_by_user
@@ -151,14 +156,19 @@ def create_app(module='instance.config.DevelopmentConfig'):
             PUT: updates bucketlist item
             DELETE: deletes a bucketlist item
         """
+
         bucketlist_item = kwargs.get('item')
+        if not bucketlist_item:
+            raise NullReferenceException()
         if request.method == 'PUT':
             name = request.form.get('name')
             done = request.form.get('done')
             bucketlist_item.id = item_id
             bucketlist_item.update(bucketlist_id=id, name=name, done=done)
+            return bucketlist_item.to_json(), 200
         elif request.method == 'DELETE':
             bucketlist_item.delete()
             return {"message": "Bucketlist item was successfully deleted"}
-        return bucketlist_item.to_json(), 200
+        else:
+            return bucketlist_item.to_json(), 200
     return app
