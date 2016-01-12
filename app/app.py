@@ -1,11 +1,14 @@
 from flask.ext.api import FlaskAPI
-from flask import request
-from models import db, BucketList, BucketListItem
+from flask import request, redirect, url_for, render_template
+from models import db, BucketList, BucketListItem, User
 from flask.ext.api.exceptions import \
     AuthenticationFailed, NotFound, ParseError, NotAcceptable
-from exceptions.handler import CredentialsRequired, NullReferenceException
+from exceptions.handler import CredentialsRequired, NullBucketListException, \
+    NullReferenceException
 import auth
 import decorators.ownership as ownership
+from flask.ext.login import current_user, login_user, LoginManager
+from oauth import OAuthSignIn
 
 
 def create_app(module='instance.config.DevelopmentConfig'):
@@ -16,15 +19,51 @@ def create_app(module='instance.config.DevelopmentConfig'):
     # Iinitialize the app Api with set configs
     db.init_app(app)
 
+    # Initialize the login manager
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'index'
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.id(int(id))
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+    # Sign in using  Oauth
+    @app.route('/authorize/<provider>')
+    def oauth_authoirize(provider):
+        if not current_user.is_anonymous:
+            redirect(url_for('index'))
+        oauth = OAuthSignIn.get_provider(provider)
+        return oauth.authorize()
+
+    @app.route('/callback/<provider>')
+    def oauth_callback(provider):
+        if not current_user.is_anonymous:
+            return redirect(url_for('index'))
+        oauth = OAuthSignIn.get_provider(provider)
+        social_id, username, email = oauth.callback()
+        if social_id is None:
+            # flash('Authenticaiton failed.')
+            return redirect(url_for('index'))
+        user = User.query.filter_by(social_id=social_id).first()
+        if not user:
+            user = User(username=username, social_id=social_id, email=email)
+            db.session.add(user)
+            db.session.commit()
+        login_user(user, True)
+        return redirect(url_for('index'))
+
     # routes go here
-    @app.route('/auth/register/', methods=['GET', 'POST'])
+    @app.route('/auth/register', methods=['GET', 'POST'])
     def register():
         """Handle user registration, ensuring only a POST request registers"""
         if request.method == 'GET':
             return {
                 'message': 'Welcome to the BucketList service',
-                'more': 'Please make a POST /auth/register with\
-                 username and password'
+                'more': 'To Register, please make a POST /auth/register with username and password'
             }, 200
         else:
             # import pdb; pdb.set_trace()
@@ -35,7 +74,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
             else:
                 raise ParseError()
 
-    @app.route('/auth/login/', methods=['GET', 'POST'])
+    @app.route('/auth/login', methods=['GET', 'POST'])
     def login():
         """Login using a POST request, else prompt for credentials """
         if request.method == 'GET':
@@ -66,7 +105,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
         else:
             raise NotFound()
 
-    @app.route('/bucketlists', methods=['POST', 'GET'])
+    @app.route('/bucketlists/', methods=['POST', 'GET'])
     @ownership.auth_required
     def bucketlist():
         """ Return a JSON response with all bucketlists """
@@ -107,13 +146,16 @@ def create_app(module='instance.config.DevelopmentConfig'):
                 "message": "Bucketlist was created successfully",
                 "bucketlist": bucketlist.to_json()}, 201
 
-    @app.route('/bucketlists/<int:id>/', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def edit_bucketlist(id, **kwargs):
         """ Edit a bucketlist:
             DELETE a bucketlist with its child items,
             UPDATE a bucketlist with its child items
         """
+
         bucketlist = BucketList.query.get(id)
+        if not bucketlist:
+            raise NullBucketListException()
         if request.method == 'DELETE':
             bucketlist.delete()
             return {"message": "Bucketlist was deleted successfully"}, 200

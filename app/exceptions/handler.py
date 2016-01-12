@@ -10,13 +10,19 @@ class UserAlreadyExists(APIException):
 class CredentialsRequired(APIException):
     """Raises a 202 status if user is not authorized """
     status_code = 202
-    detail = 'Authenticate by POSTING to /login with your credentials'
+    detail = 'Credentials Required. Please authenticate by POSTING to auth/login with your credentials'
 
 
 class ValidationError(APIException):
     """ Raises exception when token is invalid """
     status_code = 406
     detail = 'Invalid Token'
+
+
+class NullBucketListException(APIException):
+    """Raises exception when trying to edit non existing bucketlist item"""
+    status_code = 500
+    detail = 'No such bucketlist. You can only access an existing bucketlist'
 
 
 class NullReferenceException(APIException):
