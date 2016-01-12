@@ -1,6 +1,7 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import sqlalchemy
 import hashlib
+from exceptions.handler import NullReferenceException
 
 db = SQLAlchemy()
 class_mapper = sqlalchemy.orm.class_mapper
@@ -103,11 +104,17 @@ class BucketListItem(Base):
     def __init__(self, bucketlist_id, name, done=False):
         """Initializes model with id,name,done defaulting to False """
         self.name = name
-        self.done = done
+        self.done = False if done else False
         self.bucketlist_id = bucketlist_id
 
     def update(self, **kwargs):
         """Updates the object instance of the model """
         self.name = kwargs.get('name')
-        self.done = kwargs.get('done', False)
-        db.session.commit()
+        if BucketListItem.query.filter_by(name=self.name).first():
+            if kwargs.get('done') == 'True' or kwargs.get('done') == 'true':
+                self.done = True
+            else:
+                self.done = False
+            db.session.commit()
+        else:
+            raise NullReferenceException()
