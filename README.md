@@ -57,9 +57,9 @@ python run.py -h
 
 | Endpoint | Description |
 | ---- | --------------- |
+| [POST /auth/register](#) |  Register user. Request should have _username_ and _password_ in form data. |
 | [POST /auth/login](#) | Login user. Session token is valid for an hour|
 | [POST /auth/logout](#) | Logout user. |
-| [POST /auth/register](#) |  Register user. Request should have _username_ and _password_ in form data. |
 | [POST /bucketlists/](#) | Create a new bucket list. Request should have _name_ in form data. |
 | [GET /bucketlists/](#) | List all the created bucket lists. |
 | [GET /bucketlists/:id](#) | Get single bucket list. |

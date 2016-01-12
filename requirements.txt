@@ -13,6 +13,7 @@ pycrypto==2.6.1
 PyJWT==1.4.0
 python-coveralls==2.6.0
 PyYAML==3.11
+rauth==0.7.2
 requests==2.9.1
 sh==1.11
 six==1.10.0

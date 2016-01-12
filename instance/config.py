@@ -21,6 +21,12 @@ class BaseConfig(object):
         ("PUT /bucketlists/<id>/items/<item_id>", {"PUBLIC_ACCESS": False}),
         ("DELETE /bucketlists/<id>/items/<item_id>", {"PUBLIC_ACCESS": False}),
     ]
+    OAUTH_CREDENTIALS = {
+        'facebook': {
+            'id': '',
+            'secret': ''
+        }
+    }
 
 
 class DevelopmentConfig(BaseConfig):
