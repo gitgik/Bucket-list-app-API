@@ -2,7 +2,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import sqlalchemy
 import hashlib
 from exceptions.handler import NullReferenceException
-
+from flask.ext.login import UserMixin
 db = SQLAlchemy()
 class_mapper = sqlalchemy.orm.class_mapper
 
@@ -50,7 +50,7 @@ class Base(db.Model):
         return json_dict
 
 
-class User(Base):
+class User(UserMixin, Base):
     """Maps to users table """
     __tablename__ = 'users'
     username = db.Column(db.String(256), unique=True)

@@ -23,8 +23,8 @@ class BaseConfig(object):
     ]
     OAUTH_CREDENTIALS = {
         'facebook': {
-            'id': '',
-            'secret': ''
+            'id': '1509717492663327',
+            'secret': 'd6ef23f9617a2789e038833f4395391f'
         }
     }
     SECRET_KEY = 'secret'

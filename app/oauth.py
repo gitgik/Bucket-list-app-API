@@ -5,7 +5,7 @@ from flask import url_for, current_app, request, redirect
 class OAuthSignIn(object):
     providers = None
 
-    def __init__(self, provider_name):
+    def __init__(self, provider_name="facebook"):
         self.provider_name = provider_name
         credentials = current_app.config['OAUTH_CREDENTIALS'][provider_name]
         self.consumer_id = credentials['id']
@@ -24,14 +24,14 @@ class OAuthSignIn(object):
             _external=True
         )
 
-    @classmethod
-    def get_provider(self, provider_name):
-        if self.providers is None:
-            self.providers = {}
-            for provider_class in self.__subclasses__():
-                provider = provider_class()
-                self.providers[provider.provider_name] = provider
-        return self.providers[provider_name]
+    # @classmethod
+    # def get_provider(self, provider_name):
+    #     if self.providers is None:
+    #         self.providers = {}
+    #         for provider_class in self.__subclasses__():
+    #             provider = provider_class()
+    #             self.providers[provider.provider_name] = provider
+    #     return self.providers[provider_name]
 
 
 class FacebookSignIn(OAuthSignIn):
@@ -55,7 +55,7 @@ class FacebookSignIn(OAuthSignIn):
         return redirect(self.service.get_authorize_url(
             scope='email',
             response_type='code',
-            redirect_url=self.get_callback_url())
+            redirect_uri=self.get_callback_url())
         )
 
     def callback(self):
@@ -68,9 +68,10 @@ class FacebookSignIn(OAuthSignIn):
                 'redirect_uri': self.get_callback_url()
             }
         )
-        me = oauth_session.get('me?fields=id, email').json()
-        # extract email's user because Fb doesn't
+        me = oauth_session.get('me?fields=id,email').json()
+        # extract user from email address because Fb doesn't
         # provide usernames by default.
+        # return { social_id, username, email }
         return (
             'facebook$' + me['id'],
             me.get('email').split('@')[0],

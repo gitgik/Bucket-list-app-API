@@ -8,7 +8,7 @@ from exceptions.handler import CredentialsRequired, NullBucketListException, \
 import auth
 import decorators.ownership as ownership
 from flask.ext.login import current_user, login_user, LoginManager
-from oauth import OAuthSignIn
+from oauth import FacebookSignIn
 
 
 def create_app(module='instance.config.DevelopmentConfig'):
@@ -32,25 +32,26 @@ def create_app(module='instance.config.DevelopmentConfig'):
         return render_template('index.html')
 
     # Sign in using  Oauth
-    @app.route('/authorize/<provider>')
-    def oauth_authoirize(provider):
-        if not current_user.is_anonymous:
-            redirect(url_for('index'))
-        oauth = OAuthSignIn.get_provider(provider)
-        return oauth.authorize()
-
-    @app.route('/callback/<provider>')
-    def oauth_callback(provider):
+    @app.route('/authorize/facebook')
+    def oauth_authorize():
         if not current_user.is_anonymous:
             return redirect(url_for('index'))
-        oauth = OAuthSignIn.get_provider(provider)
+        oauth = FacebookSignIn()
+        return oauth.authorize()
+
+    @app.route('/callback/facebook')
+    def oauth_callback():
+        # import pdb; pdb.set_trace()
+        if not current_user.is_anonymous:
+            return redirect(url_for('index'))
+        oauth = FacebookSignIn()
         social_id, username, email = oauth.callback()
         if social_id is None:
-            # flash('Authenticaiton failed.')
+            # Authenticaiton failed
             return redirect(url_for('index'))
         user = User.query.filter_by(social_id=social_id).first()
         if not user:
-            user = User(username=username, social_id=social_id, email=email)
+            user = User(username=username, password=social_id, email=email)
             db.session.add(user)
             db.session.commit()
         login_user(user, True)
