@@ -2,7 +2,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import sqlalchemy
 import hashlib
 from exceptions.handler import NullReferenceException
-from flask.ext.login import UserMixin
+# from flask.ext.login import UserMixin
 db = SQLAlchemy()
 class_mapper = sqlalchemy.orm.class_mapper
 
@@ -50,13 +50,13 @@ class Base(db.Model):
         return json_dict
 
 
-class User(UserMixin, Base):
+class User(Base):
     """Maps to users table """
     __tablename__ = 'users'
     username = db.Column(db.String(256), unique=True)
     password = db.Column(db.String(256))
-    social_id = db.Column(db.String(64), nullable=True, unique=True)
-    email = db.Column(db.String(64), nullable=True)
+    # social_id = db.Column(db.String(64), nullable=True, unique=True)
+    # email = db.Column(db.String(64), nullable=True)
     bucketlists = db.relationship(
         'BucketList', order_by='BucketList.id')
 
@@ -99,7 +99,7 @@ class Session(Base):
 class BucketListItem(Base):
     """ Maps to BucketList table """
     __tablename__ = 'items'
-    name = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(256), nullable=False, )
     done = db.Column(db.Boolean, default=False)
     bucketlist_id = db.Column(db.Integer, db.ForeignKey(BucketList.id))
 

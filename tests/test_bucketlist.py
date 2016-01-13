@@ -12,16 +12,16 @@ class BucketListTestCase(BaseTestCase):
         login_data = json.loads(login_res.data)
         jwt_token = login_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
-        rv = self.client().get('/bucketlists', headers=headers)
+        rv = self.client().get('/bucketlists/', headers=headers)
         self.assertEqual(rv.status_code, 404)
 
         # create a bucketlist and fetch it
-        self.client().post('/bucketlists', data={'name': 'Swallow a python'},
+        self.client().post('/bucketlists/', data={'name': 'Swallow a python'},
                            headers=headers)
-        rv = self.client().get('/bucketlists', headers=headers)
+        rv = self.client().get('/bucketlists/', headers=headers)
         self.assertIn('Swallow a python', rv.data)
         # logout the user after testing
-        self.client().get('/aith/logout', headers=headers)
+        self.client().get('/auth/logout', headers=headers)
 
     # ENDPOINT: GET /bucketlists/<id>
     def test_users_can_get_bucketlist_using_id(self):
@@ -31,7 +31,7 @@ class BucketListTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().get('bucketlists/1', headers=headers)
@@ -45,7 +45,7 @@ class BucketListTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertIn("bucketlist", rv.data)
         self.assertEqual(rv.status_code, 201)
@@ -60,7 +60,7 @@ class BucketListTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
@@ -79,7 +79,7 @@ class BucketListTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().delete('/bucketlists/1', headers=headers)

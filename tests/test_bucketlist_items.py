@@ -14,11 +14,11 @@ class BucketListItemTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().post(
-            '/bucketlists/1/items',
+            '/bucketlists/1/items/',
             data={"name": "Go to Osteria Francescana"},
             headers=headers)
         self.assertEqual(rv.status_code, 201)
@@ -31,16 +31,16 @@ class BucketListItemTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().post(
-            '/bucketlists/1/items',
+            '/bucketlists/1/items/',
             data={"name": "Go to Osteria Francescana and dine lavishly"},
             headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().get(
-            '/bucketlists/1/items/1',
+            '/bucketlists/1/items/1/',
             headers=headers)
         self.assertEqual(rv.status_code, 200)
 
@@ -52,16 +52,16 @@ class BucketListItemTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={"name": "Eat pray and love"}, headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().post(
-            '/bucketlists/1/items',
+            '/bucketlists/1/items/',
             data={"name": "Go to Osteria Francescana and dine lavishly"},
             headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
-            '/bucketlists/1/items/1',
+            '/bucketlists/1/items/1/',
             data={
                 "name": "Go to Osteria Francescana and dine lavishly",
                 "done": True
@@ -77,16 +77,16 @@ class BucketListItemTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={"name": "Eat pray and love"}, headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().post(
-            '/bucketlists/1/items',
+            '/bucketlists/1/items/',
             data={"name": "Go to Osteria Francescana and dine lavishly"},
             headers=headers)
         self.assertEqual(rv.status_code, 201)
         rv = self.client().delete(
-            '/bucketlists/1/items/1',
+            '/bucketlists/1/items/1/',
             headers=headers)
         self.assertEqual(rv.status_code, 200)
 
@@ -105,11 +105,11 @@ class BucketListItemTestCase(BaseTestCase):
         ]
         for name in names:
             self.client().post(
-                '/bucketlists',
+                '/bucketlists/',
                 data={"name": name},
                 headers=headers)
         # search for a bucketlist starting with "Make"
-        rv = self.client().get('/bucketlists?q=Make', headers=headers)
+        rv = self.client().get('/bucketlists/?q=Make', headers=headers)
         self.assertEqual(rv.status_code, 200)
         results_data = json.loads(rv.data)
         results_length = len(results_data['message'])
@@ -123,21 +123,21 @@ class BucketListItemTestCase(BaseTestCase):
         jwt_token = res_data.get('token')
         headers = {'Authorization': 'Bearer {0}'.format(jwt_token)}
         rv = self.client().post(
-            '/bucketlists',
+            '/bucketlists/',
             data={'name': 'Make a drone'},
             headers=headers)
         self.assertEqual(rv.status_code, 201)
 
         for i in range(0, 200):
             self.client().post(
-                '/bucketlists',
+                '/bucketlists/',
                 data={'name': faker.bs()},
                 headers=headers)
-        rv = self.client().get('/bucketlists?limit=20', headers=headers)
+        rv = self.client().get('/bucketlists/?limit=20', headers=headers)
         rv_data = json.loads(rv.data)
         rv_length = len(rv_data['message'])
         # Return 20 bucketlist items
         self.assertEqual(rv_length, 20)
-        rv = self.client().get('/bucketlists?limit=1000', headers=headers)
+        rv = self.client().get('/bucketlists/?limit=1000', headers=headers)
         # Not acceptable in the service
         self.assertEqual(rv.status_code, 406)
