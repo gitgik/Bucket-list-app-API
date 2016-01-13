@@ -21,7 +21,8 @@ class OAuthSignIn(object):
         return url_for(
             'oauth_callback',
             provider=self.provider_name,
-            _external=True)
+            _external=True
+        )
 
     @classmethod
     def get_provider(self, provider_name):
