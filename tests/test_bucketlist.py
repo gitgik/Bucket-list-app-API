@@ -36,6 +36,7 @@ class BucketListTestCase(BaseTestCase):
         self.assertEqual(rv.status_code, 201)
         rv = self.client().get('bucketlists/1', headers=headers)
         self.assertEqual(rv.status_code, 200)
+        self.assertIn('Eat pray and love', rv.data)
 
     # ENDPOINT: POST '/bucketlists'
     def test_user_can_create_bucketlist(self):
@@ -49,6 +50,8 @@ class BucketListTestCase(BaseTestCase):
             data={'name': 'Eat pray and love'}, headers=headers)
         self.assertIn("bucketlist", rv.data)
         self.assertEqual(rv.status_code, 201)
+        results = self.client().get('/bucketlists/1', headers=headers)
+        self.assertIn('Eat pray and love', results.data)
         # logout the user after testing
         self.client().get('/auth/logout', headers=headers)
 
@@ -70,6 +73,8 @@ class BucketListTestCase(BaseTestCase):
             },
             headers=headers)
         self.assertEqual(rv.status_code, 200)
+        results = self.client().get('/bucketlists/1', headers=headers)
+        self.assertIn('Dont just eat', results.data)
 
     # ENDPOINT: DELETE: '/bucketlist/<id>'
     def test_users_can_delete_bucketlist(self):
@@ -84,3 +89,6 @@ class BucketListTestCase(BaseTestCase):
         self.assertEqual(rv.status_code, 201)
         rv = self.client().delete('/bucketlists/1', headers=headers)
         self.assertEqual(rv.status_code, 200)
+        results = self.client().get('/bucketlists/1', headers=headers)
+        self.assertIn('No such bucketlist', results.data)
+
