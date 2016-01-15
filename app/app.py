@@ -1,14 +1,12 @@
 from flask.ext.api import FlaskAPI
-from flask import request, redirect, url_for, render_template
-from models import db, BucketList, BucketListItem, User
+from flask import request
+from models import db, BucketList, BucketListItem
 from flask.ext.api.exceptions import \
-    AuthenticationFailed, NotFound, ParseError, NotAcceptable
+    AuthenticationFailed, NotFound, ParseError
 from exceptions.handler import CredentialsRequired, NullBucketListException, \
     NullReferenceException
 import auth
 import decorators.ownership as ownership
-from flask.ext.login import current_user, login_user, LoginManager
-from oauth import FacebookSignIn
 
 
 def create_app(module='instance.config.DevelopmentConfig'):
@@ -18,44 +16,6 @@ def create_app(module='instance.config.DevelopmentConfig'):
     app.config.from_object(module)
     # Iinitialize the app Api with set configs
     db.init_app(app)
-
-    # # Initialize the login manager
-    # login_manager = LoginManager(app)
-    # login_manager.login_view = 'index'
-
-    # @login_manager.user_loader
-    # def load_user(id):
-    #     return User.query.id(int(id))
-
-    # @app.route('/')
-    # def index():
-    #     return render_template('index.html')
-
-    # # Sign in using  Oauth
-    # @app.route('/authorize/facebook')
-    # def oauth_authorize():
-    #     if not current_user.is_anonymous:
-    #         return redirect(url_for('index'))
-    #     oauth = FacebookSignIn()
-    #     return oauth.authorize()
-
-    # @app.route('/callback/facebook')
-    # def oauth_callback():
-    #     # import pdb; pdb.set_trace()
-    #     if not current_user.is_anonymous:
-    #         return redirect(url_for('index'))
-    #     oauth = FacebookSignIn()
-    #     social_id, username, email = oauth.callback()
-    #     if social_id is None:
-    #         # Authenticaiton failed
-    #         return redirect(url_for('index'))
-    #     user = User.query.filter_by(social_id=social_id).first()
-    #     if not user:
-    #         user = User(username=username, password=social_id, email=email)
-    #         db.session.add(user)
-    #         db.session.commit()
-    #     login_user(user, True)
-    #     return redirect(url_for('index'))
 
     # routes go here
     @app.route('/auth/register', methods=['GET', 'POST'])
@@ -113,15 +73,17 @@ def create_app(module='instance.config.DevelopmentConfig'):
         user_id = auth.get_current_user()
         results_data = None
         if request.method == 'GET':
-            results = BucketList.get_all(user_id)
             # pagination limit
+            results = BucketList.get_all(user_id)
             limit = request.args.get('limit', 20)
             q = request.args.get('q')
             page = request.args.get('page', 1)
 
             if results.all():
-                if not 0 <= int(limit) <= 100:
-                    raise NotAcceptable('Maximum limit per page is 100')
+                if int(limit) > 100:
+                    # return only the first 100 results
+                    results = BucketList.get_pagination(user_id)
+                    results_data = results
                 else:
                     results_data = results
                 if q:

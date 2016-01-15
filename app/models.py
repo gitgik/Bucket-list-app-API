@@ -1,8 +1,7 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import sqlalchemy
 import hashlib
-from exceptions.handler import NullReferenceException
-# from flask.ext.login import UserMixin
+
 db = SQLAlchemy()
 class_mapper = sqlalchemy.orm.class_mapper
 
@@ -53,7 +52,7 @@ class Base(db.Model):
 class User(Base):
     """Maps to users table """
     __tablename__ = 'users'
-    username = db.Column(db.String(256), unique=True)
+    username = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256))
     # social_id = db.Column(db.String(64), nullable=True, unique=True)
     # email = db.Column(db.String(64), nullable=True)
@@ -88,6 +87,11 @@ class BucketList(Base):
         """Returns logged in user bucketlist data """
         return BucketList.query.filter_by(created_by=user_id)
 
+    @staticmethod
+    def get_pagination(user_id):
+        """Returns logged in user bucketlist data up to a limit"""
+        return BucketList.query.filter_by(created_by=user_id).limit(100)
+
 
 class Session(Base):
     """Maps to session table """
@@ -99,7 +103,7 @@ class Session(Base):
 class BucketListItem(Base):
     """ Maps to BucketList table """
     __tablename__ = 'items'
-    name = db.Column(db.String(256), nullable=False, )
+    name = db.Column(db.String(256), nullable=False, unique=True)
     done = db.Column(db.Boolean, default=False)
     bucketlist_id = db.Column(db.Integer, db.ForeignKey(BucketList.id))
 
@@ -112,11 +116,8 @@ class BucketListItem(Base):
     def update(self, **kwargs):
         """Updates the object instance of the model """
         self.name = kwargs.get('name')
-        if BucketListItem.query.filter_by(name=self.name).first():
-            if kwargs.get('done') == 'True' or kwargs.get('done') == 'true':
-                self.done = True
-            else:
-                self.done = False
-            db.session.commit()
+        if kwargs.get('done') == 'True' or kwargs.get('done') == 'true':
+            self.done = True
         else:
-            raise NullReferenceException()
+            self.done = False
+        db.session.commit()

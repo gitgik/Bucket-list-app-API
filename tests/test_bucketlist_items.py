@@ -22,6 +22,8 @@ class BucketListItemTestCase(BaseTestCase):
             data={"name": "Go to Osteria Francescana"},
             headers=headers)
         self.assertEqual(rv.status_code, 201)
+        results = self.client().get('/bucketlists/1/items/1/', headers=headers)
+        self.assertIn('Go to Osteria Francescana', results.data)
 
     # ENDPOINT: GET '/bucketlists/<id>/items/<item_id>'
     def test_user_can_retrieve_bucketlist_items(self):
@@ -43,6 +45,7 @@ class BucketListItemTestCase(BaseTestCase):
             '/bucketlists/1/items/1/',
             headers=headers)
         self.assertEqual(rv.status_code, 200)
+        self.assertIn('Go to Osteria Francescana', rv.data)
 
     # ENDPOINT: PUT /bucketlists/<int:id>/items/<int:item_id>
     def test_users_can_update_bucketlist_item(self):
@@ -68,6 +71,8 @@ class BucketListItemTestCase(BaseTestCase):
             },
             headers=headers)
         self.assertEqual(rv.status_code, 200)
+        results = self.client().get('/bucketlists/1/items/1/', headers=headers)
+        self.assertIn('Go to Osteria Francescana', results.data)
 
     # ENDPOINT: DELETE: '/bucketlists/<id>/items/<item_id>'
     def tests_user_can_delete_bucketlist_item(self):
@@ -89,6 +94,8 @@ class BucketListItemTestCase(BaseTestCase):
             '/bucketlists/1/items/1/',
             headers=headers)
         self.assertEqual(rv.status_code, 200)
+        results = self.client().get('/bucketlists/1/items/1/', headers=headers)
+        self.assertIn('No such item', results.data)
 
     def test_user_can_search_bucketlists(self):
         """Tests users can search for an existing bucketlist """
@@ -138,6 +145,11 @@ class BucketListItemTestCase(BaseTestCase):
         rv_length = len(rv_data['message'])
         # Return 20 bucketlist items
         self.assertEqual(rv_length, 20)
-        rv = self.client().get('/bucketlists/?limit=1000', headers=headers)
-        # Not acceptable in the service
-        self.assertEqual(rv.status_code, 406)
+        rvp = self.client().get('/bucketlists/?limit=1000', headers=headers)
+        # Returns only the first 100 records
+        self.assertEqual(rvp.status_code, 200)
+        # Return 100 bucketlist items for limit > 100
+        rv_data = json.loads(rvp.data)
+        rv_length = len(rv_data['message'])
+        # Return 20 bucketlist items
+        self.assertEqual(rv_length, 201)
