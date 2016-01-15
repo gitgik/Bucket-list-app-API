@@ -54,8 +54,6 @@ class User(Base):
     __tablename__ = 'users'
     username = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256))
-    # social_id = db.Column(db.String(64), nullable=True, unique=True)
-    # email = db.Column(db.String(64), nullable=True)
     bucketlists = db.relationship(
         'BucketList', order_by='BucketList.id')
 

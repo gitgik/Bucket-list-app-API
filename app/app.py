@@ -14,7 +14,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
     app = FlaskAPI(__name__, instance_relative_config=True)
     # Object-based configuration
     app.config.from_object(module)
-    # Iinitialize the app Api with set configs
+    # Initializes the app Api with set configs
     db.init_app(app)
 
     # routes go here
@@ -27,7 +27,6 @@ def create_app(module='instance.config.DevelopmentConfig'):
                 'more': 'To Register, please make a POST /auth/register with username and password'
             }, 200
         else:
-            # import pdb; pdb.set_trace()
             username = request.form.get('username')
             password = request.form.get('password')
             if username and password:
@@ -40,7 +39,6 @@ def create_app(module='instance.config.DevelopmentConfig'):
         """Login using a POST request, else prompt for credentials """
         if request.method == 'GET':
             raise CredentialsRequired()
-
         # handle POST login
         username = request.form.get('username')
         password = request.form.get('password')
