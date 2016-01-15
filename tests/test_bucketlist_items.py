@@ -145,6 +145,11 @@ class BucketListItemTestCase(BaseTestCase):
         rv_length = len(rv_data['message'])
         # Return 20 bucketlist items
         self.assertEqual(rv_length, 20)
-        rv = self.client().get('/bucketlists/?limit=1000', headers=headers)
-        # Not acceptable in the service
-        self.assertEqual(rv.status_code, 406)
+        rvp = self.client().get('/bucketlists/?limit=1000', headers=headers)
+        # Returns only the first 100 records
+        self.assertEqual(rvp.status_code, 200)
+        # Return 100 bucketlist items for limit > 100
+        rv_data = json.loads(rvp.data)
+        rv_length = len(rv_data['message'])
+        # Return 20 bucketlist items
+        self.assertEqual(rv_length, 201)

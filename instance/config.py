@@ -53,4 +53,4 @@ class ProductionConfig(BaseConfig):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' \
         + os.path.join(BASE_DIR, 'bucketlist.sqlite')
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECRET_KEY = 'a_bucketlist_secret'

@@ -2,7 +2,7 @@ from flask.ext.api import FlaskAPI
 from flask import request
 from models import db, BucketList, BucketListItem
 from flask.ext.api.exceptions import \
-    AuthenticationFailed, NotFound, ParseError, NotAcceptable
+    AuthenticationFailed, NotFound, ParseError
 from exceptions.handler import CredentialsRequired, NullBucketListException, \
     NullReferenceException
 import auth
@@ -73,15 +73,17 @@ def create_app(module='instance.config.DevelopmentConfig'):
         user_id = auth.get_current_user()
         results_data = None
         if request.method == 'GET':
-            results = BucketList.get_all(user_id)
             # pagination limit
+            results = BucketList.get_all(user_id)
             limit = request.args.get('limit', 20)
             q = request.args.get('q')
             page = request.args.get('page', 1)
 
             if results.all():
-                if not 0 <= int(limit) <= 100:
-                    raise NotAcceptable('Maximum limit per page is 100')
+                if int(limit) > 100:
+                    # return only the first 100 results
+                    results = BucketList.get_pagination(user_id)
+                    results_data = results
                 else:
                     results_data = results
                 if q:
