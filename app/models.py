@@ -87,11 +87,6 @@ class BucketList(Base):
         """Returns logged in user bucketlist data """
         return BucketList.query.filter_by(created_by=user_id)
 
-    @staticmethod
-    def get_pagination(user_id):
-        """Returns logged in user bucketlist data up to a limit"""
-        return BucketList.query.filter_by(created_by=user_id).limit(100)
-
 
 class Session(Base):
     """Maps to session table """

@@ -80,10 +80,18 @@ def create_app(module='instance.config.DevelopmentConfig'):
             page = request.args.get('page', 1)
 
             if results.all():
+                results_data = results
                 if int(limit) > 100:
                     # return only the first 100 results
-                    results = BucketList.get_pagination(user_id)
-                    results_data = results
+                    result_list = []
+                    limit = 100
+                    for item in results_data.paginate(
+                            page, int(limit), False).items:
+                        if callable(getattr(item, 'to_json')):
+                            result = item.to_json()
+                            result_list.append(result)
+                    results_data = result_list
+                    return {'message': results_data}
                 else:
                     results_data = results
                 if q:

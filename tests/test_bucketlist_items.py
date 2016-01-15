@@ -151,5 +151,5 @@ class BucketListItemTestCase(BaseTestCase):
         # Return 100 bucketlist items for limit > 100
         rv_data = json.loads(rvp.data)
         rv_length = len(rv_data['message'])
-        # Return 20 bucketlist items
-        self.assertEqual(rv_length, 201)
+        # Return a maximum of 100 bucketlist items if limit > 100
+        self.assertEqual(rv_length, 100)
