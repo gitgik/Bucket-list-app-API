@@ -36,16 +36,13 @@ def generate_token(username, password):
         "username": username,
         "password": hashlib.sha512(password).hexdigest()
     }
-    try:
-        user_results = User.query.filter_by(**user).first()
-        user['exp'] = datetime.utcnow() + timedelta(minutes=60)
-        secret_key = current_app.config.get('SECRET_KEY')
-        jwt_string = jwt.encode(user, secret_key)
-        session = Session(user_id=user_results.id, token=jwt_string)
-        session.save()
-        return jwt_string
-    except TypeError:
-        return None
+    user_results = User.query.filter_by(**user).first()
+    user['exp'] = datetime.utcnow() + timedelta(minutes=60)
+    secret_key = current_app.config.get('SECRET_KEY')
+    jwt_string = jwt.encode(user, secret_key)
+    session = Session(user_id=user_results.id, token=jwt_string)
+    session.save()
+    return jwt_string
 
 
 def get_current_user():

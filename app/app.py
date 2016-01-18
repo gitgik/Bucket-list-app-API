@@ -24,7 +24,8 @@ def create_app(module='instance.config.DevelopmentConfig'):
         if request.method == 'GET':
             return {
                 'message': 'Welcome to the BucketList service',
-                'more': 'To Register, please make a POST /auth/register with username and password'
+                'more': 'To Register, please make a POST /auth/register with \
+                    username and password'
             }, 200
         else:
             username = request.form.get('username')
@@ -76,22 +77,11 @@ def create_app(module='instance.config.DevelopmentConfig'):
             limit = request.args.get('limit', 20)
             q = request.args.get('q')
             page = request.args.get('page', 1)
-
+            if page < 1:
+                raise NotFound('Please specify a valid page (positive number)')
             if results.all():
                 results_data = results
-                if int(limit) > 100:
-                    # return only the first 100 results
-                    result_list = []
-                    limit = 100
-                    for item in results_data.paginate(
-                            page, int(limit), False).items:
-                        if callable(getattr(item, 'to_json')):
-                            result = item.to_json()
-                            result_list.append(result)
-                    results_data = result_list
-                    return {'message': results_data}
-                else:
-                    results_data = results
+                limit = 100 if int(limit) > 100 else limit
                 if q:
                     results_data = results.filter(
                         BucketList.name.ilike('%{0}%'.format(q)))
@@ -102,8 +92,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
                     if callable(getattr(item, 'to_json')):
                         result = item.to_json()
                         result_list.append(result)
-                results_data = result_list
-                return {'message': results_data}
+                return {'message': result_list}
 
             raise NotFound('User has no bucketlist')
 
