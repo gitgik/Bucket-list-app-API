@@ -53,3 +53,12 @@ class AuthenticationTestCase(BaseTestCase):
         headers = {'Authorization': 'Bearer {0}'.format(jwtoken)}
         logout_req = self.client().get('/auth/logout', headers=headers)
         self.assertIn(auth.SERVICE_MESSAGES['logout'], logout_req.data)
+
+    def test_correct_token_generation(self):
+        """Tests correct token generation"""
+        rv = self.client().post(
+            '/auth/login',
+            data={'username': 'its-me', 'password': 'i have no idea'})
+        res_json = json.loads(rv.data)
+        jwtoken = res_json.get('token')
+        self.assertIsNone(jwtoken)
