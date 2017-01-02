@@ -1,4 +1,4 @@
-# Bucket-list-app-API [![Build Status](https://travis-ci.org/andela-ggikera/Bucket-list-app-API.svg?branch=master)](https://travis-ci.org/andela-ggikera/Bucket-list-app-API) [![Coverage Status](https://coveralls.io/repos/andela-ggikera/Bucket-list-app-API/badge.svg?branch=master&service=github)](https://coveralls.io/github/andela-ggikera/Bucket-list-app-API?branch=master) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
+# Bucket-list-app-API [![Build Status](https://travis-ci.org/gitgik/Bucket-list-app-API.svg?branch=master)](https://travis-ci.org/gitgik/Bucket-list-app-API) [![Coverage Status](https://coveralls.io/repos/gitgik/Bucket-list-app-API/badge.svg?branch=master&service=github)](https://coveralls.io/github/gitgik/Bucket-list-app-API?branch=master) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org)
 --------------------------------------------------
 A feature-rich Flask API for a bucket list service with token based authentication, pagination and search capabilities.
 
@@ -70,6 +70,3 @@ python run.py -h
 | [DELETE /bucketlists/:id/items/:item_id](#) | Delete this single bucket list. |
 | [GET /bucketlists?limit=20](#) | Get 20 bucket list records belonging to user. Allows for a maximum of 100 records. |
 | [GET /bucketlists?q=bucket1](#) | Search for bucket lists with bucket1 in name. |
-
-
-
