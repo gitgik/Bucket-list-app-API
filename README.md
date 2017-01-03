@@ -70,3 +70,6 @@ python run.py -h
 | [DELETE /bucketlists/:id/items/:item_id](#) | Delete this single bucket list. |
 | [GET /bucketlists?limit=20](#) | Get 20 bucket list records belonging to user. Allows for a maximum of 100 records. |
 | [GET /bucketlists?q=bucket1](#) | Search for bucket lists with bucket1 in name. |
+
+###Todo
+* Add Oauth as an option for authentication
