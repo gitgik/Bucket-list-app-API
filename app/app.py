@@ -23,8 +23,10 @@ def create_app(module='instance.config.DevelopmentConfig'):
         """Handle user registration, ensuring only a POST request registers"""
         if request.method == 'GET':
             return {
-                'message': 'Welcome to the BucketList service',
-                'more': 'To Register, please make a POST /auth/register with \
+                'message':
+                'Welcome to the BucketList service',
+                'more':
+                'To Register, please make a POST /auth/register with \
                     username and password'
             }, 200
         else:
@@ -46,13 +48,13 @@ def create_app(module='instance.config.DevelopmentConfig'):
         if auth.check_auth(username, password):
             return {
                 'message': [
-                    auth.SERVICE_MESSAGES['login'],
-                    {
+                    auth.SERVICE_MESSAGES['login'], {
                         'available endpoints':
                         app.config.get('AVAILABLE_ENDPOINTS')
                     }
                 ],
-                'token': auth.generate_token(username, password)
+                'token':
+                auth.generate_token(username, password)
             }
         else:
             raise AuthenticationFailed()
@@ -87,8 +89,8 @@ def create_app(module='instance.config.DevelopmentConfig'):
                         BucketList.name.ilike('%{0}%'.format(q)))
                 # serialize result objects to json
                 result_list = []
-                for item in results_data.paginate(
-                        page, int(limit), False).items:
+                for item in results_data.paginate(page, int(limit),
+                                                  False).items:
                     if callable(getattr(item, 'to_json')):
                         result = item.to_json()
                         result_list.append(result)
@@ -102,7 +104,8 @@ def create_app(module='instance.config.DevelopmentConfig'):
             bucketlist.save()
             return {
                 "message": "Bucketlist was created successfully",
-                "bucketlist": bucketlist.to_json()}, 201
+                "bucketlist": bucketlist.to_json()
+            }, 201
 
     @app.route('/bucketlists/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def edit_bucketlist(id, **kwargs):
@@ -134,8 +137,7 @@ def create_app(module='instance.config.DevelopmentConfig'):
             name = request.form.get('name')
             done = request.form.get('done')
             bucketlist_item = BucketListItem(
-                bucketlist_id=id, name=name, done=done
-            )
+                bucketlist_id=id, name=name, done=done)
             bucketlist_item.save()
             return {
                 "message": "Bucketlist item was successfully created",
@@ -146,8 +148,9 @@ def create_app(module='instance.config.DevelopmentConfig'):
             bucketlist = BucketList.query.get(id)
             return bucketlist.to_json(), 200
 
-    @app.route('/bucketlists/<int:id>/items/<int:item_id>/',
-               methods=['GET', 'PUT', 'DELETE'])
+    @app.route(
+        '/bucketlists/<int:id>/items/<int:item_id>/',
+        methods=['GET', 'PUT', 'DELETE'])
     @ownership.auth_required
     @ownership.owned_by_user
     @ownership.owned_by_bucketlist
@@ -171,4 +174,5 @@ def create_app(module='instance.config.DevelopmentConfig'):
             return {"message": "Bucketlist item was successfully deleted"}
         else:
             return bucketlist_item.to_json(), 200
+
     return app

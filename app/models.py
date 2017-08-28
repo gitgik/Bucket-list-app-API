@@ -54,8 +54,7 @@ class User(Base):
     __tablename__ = 'users'
     username = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256))
-    bucketlists = db.relationship(
-        'BucketList', order_by='BucketList.id')
+    bucketlists = db.relationship('BucketList', order_by='BucketList.id')
 
     def __init__(self, username, password):
         self.username = username
@@ -72,7 +71,6 @@ class BucketList(Base):
     name = db.Column(db.String(256), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey(User.id))
 
-    user = db.relationship('User')
     items = db.relationship('BucketListItem')
 
     def __init__(self, created_by, name):
